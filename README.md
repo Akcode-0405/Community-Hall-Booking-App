@@ -12,11 +12,20 @@ A production-ready, full-stack multi-tenant Hall Booking SaaS platform serving c
 
 ## 🚀 Run with Docker (Recommended)
 
-One command boots the full multi-tenant stack with PostgreSQL PostGIS, Redis, Celery, Django REST API, and Next.js, automatically applies migrations, and seeds all demo data:
+### Step 1: Start the containers
+Boots PostgreSQL PostGIS, Redis, Celery, Django REST API, and Next.js, and applies database schema migrations (does not seed data):
 
 ```bash
-docker compose up --build
+docker compose up -d --build
 ```
+
+### Step 2: Seed Demo Data
+After `docker compose up -d --build` finishes, run the seeder script to populate demo accounts, tenants, halls, bookings, and vendor services:
+
+```bash
+./seed.sh
+```
+*(On Windows: `seed.bat` or `docker compose exec backend python manage.py seed_demo_data`)*
 
 When the services start, access the applications at:
 
