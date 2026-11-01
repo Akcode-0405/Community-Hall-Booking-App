@@ -15,6 +15,8 @@ if [ "${RUN_MIGRATIONS:-0}" = "1" ]; then
     fi
     echo "Applying database migrations..."
     python manage.py migrate --noinput
+    echo "Seeding demo accounts and data..."
+    python manage.py seed_demo_data || true
 fi
 
 exec "$@"

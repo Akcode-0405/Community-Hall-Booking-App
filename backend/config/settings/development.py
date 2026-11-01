@@ -43,11 +43,15 @@ MIDDLEWARE.insert(
 # DEBUG TOOLBAR
 # =============================================================================
 
-# Show debug toolbar for requests from these IPs
-INTERNAL_IPS = [
-    '127.0.0.1',
-    'localhost',
-]
+# When DATABASE_URL is not provided and GDAL is not installed (e.g. host development without Docker),
+# fallback to local SQLite file db.sqlite3 so manage.py runserver and commands work out of the box.
+if 'DATABASE_URL' not in os.environ and not HAS_GDAL:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 # Docker-compatible: also match the Docker gateway IP
 import socket

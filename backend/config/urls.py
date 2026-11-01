@@ -36,10 +36,11 @@ urlpatterns = [
     # API v1 endpoints
     # -------------------------------------------------------------------------
     path('api/v1/auth/', include('apps.accounts.urls')),
-    # Phase 2 (in progress):
-    # path('api/v1/tenants/', include('apps.tenants.urls')),
-    # path('api/v1/subscriptions/', include('apps.subscriptions.urls')),
-    # path('api/v1/payments/', include('apps.payments.urls')),
+    path('api/v1/tenants/', include('apps.tenants.urls')),
+    path('api/v1/halls/', include('apps.halls.urls')),
+    path('api/v1/discover/halls/', include(('apps.halls.urls', 'halls'), namespace='discover-halls')),
+    path('api/v1/bookings/', include('apps.bookings.urls')),
+    path('api/v1/vendors/', include('apps.vendors.urls')),
 
     # Health probe (Docker / load balancer)
     path('api/health/', HealthCheckView.as_view(), name='health'),

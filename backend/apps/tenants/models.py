@@ -136,6 +136,9 @@ class Tenant(BaseModel):
             return 'This tenant account is suspended. Write operations are not permitted.'
         if self.status == TenantStatus.CANCELLED:
             return 'This tenant account has been cancelled.'
+        from django.apps import apps as django_apps
+        if not django_apps.is_installed('apps.subscriptions'):
+            return None if self.status == TenantStatus.ACTIVE else 'Tenant is not active.'
         sub = self.current_subscription
         if sub is None or not sub.grants_write_access:
             return (

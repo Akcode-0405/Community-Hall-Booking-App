@@ -18,9 +18,17 @@ interface NavItem {
 const NAV: NavItem[] = [
   { href: '/halls', label: 'Find halls' },
   { href: '/compare', label: 'Compare', roles: ['customer'] },
-  { href: '/dashboard', label: 'Dashboard', roles: ['customer', 'vendor', 'tenant_owner', 'tenant_manager', 'platform_admin'] },
   { href: '/bookings', label: 'My bookings', roles: ['customer'] },
+  { href: '/saved-halls', label: 'Saved halls', roles: ['customer'] },
   { href: '/preferences', label: 'Preferences', roles: ['customer'] },
+  { href: '/admin-dashboard', label: 'Admin Portal', roles: ['platform_admin'] },
+  { href: '/tenant/halls', label: 'Halls & Pricing', roles: ['tenant_owner', 'tenant_manager'] },
+  { href: '/tenant/bookings', label: 'Bookings Queue', roles: ['tenant_owner', 'tenant_manager'] },
+  { href: '/tenant/locations', label: 'Locations', roles: ['tenant_owner', 'tenant_manager'] },
+  { href: '/vendor/services', label: 'My Services', roles: ['vendor'] },
+  { href: '/vendor/bookings', label: 'Enquiries & Quotes', roles: ['vendor'] },
+  { href: '/vendor/profile', label: 'Business Profile', roles: ['vendor'] },
+  { href: '/dashboard', label: 'Dashboard', roles: ['customer', 'vendor', 'tenant_owner', 'tenant_manager', 'platform_admin'] },
 ];
 
 export function SiteHeader() {

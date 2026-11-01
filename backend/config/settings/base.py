@@ -101,9 +101,9 @@ INSTALLED_APPS += [
     'apps.common',              # Shared utilities, base models, audit log
     'apps.accounts',            # User management, authentication, roles
     'apps.tenants',             # Tenant organisations, memberships, invitations
-    # Phase 2 (in progress — not yet registered):
-    # 'apps.subscriptions',     # SaaS plans, tenant subscriptions, invoices
-    # 'apps.payments',          # Razorpay gateway, signature checks, webhooks
+    'apps.halls',               # Halls, locations, amenities, discovery & recommendations
+    'apps.bookings',            # Booking lifecycle, locking, approvals
+    'apps.vendors',             # Vendors, event services, customer enquiries
 ]
 
 MIDDLEWARE = [
