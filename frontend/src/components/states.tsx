@@ -1,5 +1,5 @@
-import { Loader2, Construction, AlertTriangle } from 'lucide-react';
-import { ApiError, errorMessage } from '@/lib/api';
+import { AlertTriangle, Loader2 } from 'lucide-react';
+import { errorMessage } from '@/lib/api';
 
 export function Spinner({ label = 'Loading…' }: { label?: string }) {
   return (
@@ -20,19 +20,8 @@ export function EmptyState({ title, description, action }: { title: string; desc
   );
 }
 
-/** Error display that distinguishes "feature not built yet" from real failures. */
+/** Error display for query and mutation failures. */
 export function QueryError({ error }: { error: unknown }) {
-  if (error instanceof ApiError && error.isNotImplemented) {
-    return (
-      <div className="rounded-lg border border-dashed p-10 text-center">
-        <Construction className="mx-auto h-8 w-8 text-muted-foreground" aria-hidden />
-        <p className="mt-3 font-medium">Coming soon</p>
-        <p className="mt-1 text-sm text-muted-foreground">
-          This part of the platform is still being built. Check back shortly.
-        </p>
-      </div>
-    );
-  }
   return (
     <div className="flex items-start gap-3 rounded-lg border border-destructive/50 p-4 text-sm text-destructive" role="alert">
       <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />

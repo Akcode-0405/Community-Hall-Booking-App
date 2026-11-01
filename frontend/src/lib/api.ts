@@ -64,7 +64,7 @@ async function parseError(res: Response): Promise<ApiError> {
     return new ApiError(res.status, 'ERROR', String((body as { detail: unknown }).detail));
   }
   if (res.status === 404) {
-    return new ApiError(404, 'ENDPOINT_NOT_FOUND', 'This feature is not available yet.');
+    return new ApiError(404, 'NOT_FOUND', 'The requested resource was not found.');
   }
   return new ApiError(res.status, 'ERROR', `Request failed (${res.status}).`);
 }

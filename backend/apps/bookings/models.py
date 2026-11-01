@@ -131,3 +131,4 @@ class BookingStatusLog(BaseModel):
     class Meta:
         db_table = 'booking_status_logs'
         ordering = ['-created_at']
+

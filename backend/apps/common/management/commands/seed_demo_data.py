@@ -561,3 +561,4 @@ class Command(BaseCommand):
         self.stdout.write("3. Customer:        customer@example.com    / CustomerPass123!")
         self.stdout.write("4. Vendor:          vendor@royaldecor.com   / VendorPass123!")
         self.stdout.write("---------------------------------------------------------------")
+

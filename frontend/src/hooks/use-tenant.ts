@@ -120,3 +120,4 @@ export function useRejectBooking() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ['bookings'] }),
   });
 }
+

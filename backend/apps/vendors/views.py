@@ -139,3 +139,4 @@ class VendorBookingRespondView(APIView):
 
         booking.save()
         return Response(VendorServiceBookingSerializer(booking).data)
+

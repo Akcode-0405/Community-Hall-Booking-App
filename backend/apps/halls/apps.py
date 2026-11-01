@@ -5,3 +5,4 @@ class HallsConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'apps.halls'
     verbose_name = 'Halls & Discovery'
+

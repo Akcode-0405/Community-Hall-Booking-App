@@ -103,3 +103,4 @@ class VendorServiceBooking(BaseModel):
     class Meta:
         db_table = 'vendor_service_bookings'
         ordering = ['-created_at']
+

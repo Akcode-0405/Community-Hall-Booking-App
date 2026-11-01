@@ -109,3 +109,4 @@ class CurrentTenantView(APIView):
             'tenant': TenantSerializer(membership.tenant).data,
             'membership': TenantMembershipSerializer(membership).data,
         })
+

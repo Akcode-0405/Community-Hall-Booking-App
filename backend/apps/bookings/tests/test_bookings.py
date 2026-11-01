@@ -170,3 +170,4 @@ class TestBookingLifecycle:
         booking.refresh_from_db()
         assert booking.status == BookingStatus.CANCELLED
         assert booking.cancellation_reason == 'Change of plans'
+

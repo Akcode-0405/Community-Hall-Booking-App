@@ -13,3 +13,4 @@ urlpatterns = [
     path('<uuid:id>/suspend/', views.TenantSuspendView.as_view(), name='tenant-suspend'),
     path('<uuid:id>/activate/', views.TenantActivateView.as_view(), name='tenant-activate'),
 ]
+

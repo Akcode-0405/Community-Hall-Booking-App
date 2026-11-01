@@ -141,3 +141,4 @@ class RecommendationEngine:
                 'rating': round(rating_score * 100),
             },
         }
+

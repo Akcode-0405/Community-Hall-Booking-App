@@ -150,3 +150,4 @@ class HallReview(BaseModel):
     class Meta:
         db_table = 'hall_reviews'
         ordering = ['-created_at']
+

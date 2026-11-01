@@ -59,3 +59,4 @@ class TenantMembershipSerializer(serializers.ModelSerializer):
             'joined_at',
         ]
         read_only_fields = ['id', 'joined_at']
+

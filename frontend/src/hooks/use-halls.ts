@@ -1,9 +1,8 @@
 'use client';
 
 /**
- * Discovery & booking hooks. Endpoints follow architecture doc §6.7/§6.8;
- * until the backend phases land they surface ApiError.isNotImplemented,
- * which the UI renders as "Coming soon".
+ * Discovery & booking hooks.
+ * Connects to Django REST API endpoints for hall discovery, filtering, and booking lifecycle.
  */
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api';

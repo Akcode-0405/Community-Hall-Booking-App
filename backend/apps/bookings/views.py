@@ -225,3 +225,4 @@ class BookingCancelView(APIView):
         )
 
         return Response(BookingDetailSerializer(booking).data)
+

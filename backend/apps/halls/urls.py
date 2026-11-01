@@ -20,3 +20,4 @@ urlpatterns = [
     path('manage/halls/', views.TenantHallListCreateView.as_view(), name='tenant-hall-list'),
     path('manage/halls/<uuid:id>/', views.TenantHallDetailView.as_view(), name='tenant-hall-detail'),
 ]
+
