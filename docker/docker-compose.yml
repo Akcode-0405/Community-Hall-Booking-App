@@ -1,0 +1,164 @@
+# ==============================================================================
+# Docker Compose for Hall Booking SaaS Platform
+#
+# From the repository root:   docker compose up --build
+# (the root docker-compose.yml includes this file)
+#
+# Services:
+#   db             - PostgreSQL 16 with PostGIS 3.4 extension
+#   redis          - Redis 7 for caching, Celery broker, and result backend
+#   backend        - Django REST API (gunicorn) on :8000; migrates on start
+#   celery_worker  - Celery worker for async tasks (emails, billing jobs)
+#   celery_beat    - Celery beat for periodic task scheduling
+#   frontend       - Next.js app on :3000
+#
+# Configuration: an optional ../.env (copy of .env.example) is loaded into the
+# Python services; the `environment:` values below override it for Docker.
+# ==============================================================================
+
+# Shared settings for the three Python containers (same image).
+x-backend-common: &backend-common
+  build:
+    context: ..
+    dockerfile: docker/Dockerfile
+  restart: unless-stopped
+  env_file:
+    - path: ../.env
+      required: false
+  environment: &backend-env
+    DATABASE_URL: postgis://hallbooking:hallbooking@db:5432/hallbooking_db
+    REDIS_URL: redis://redis:6379/0
+    DJANGO_SETTINGS_MODULE: config.settings.production
+    DJANGO_ALLOWED_HOSTS: localhost,127.0.0.1,backend
+    # Local stack is served over plain HTTP (put a TLS proxy in front for real
+    # deployments and set these back to True).
+    DJANGO_SECURE_SSL_REDIRECT: "False"
+    DJANGO_SECURE_COOKIES: "False"
+    DEFAULT_FILE_STORAGE: django.core.files.storage.FileSystemStorage
+    FRONTEND_URL: http://localhost:3000
+    # Ignore host-specific GDAL paths from .env (e.g. Windows DLL paths set for
+    # the manual setup); the Linux image auto-detects its own GDAL/GEOS.
+    GDAL_LIBRARY_PATH: ""
+    GEOS_LIBRARY_PATH: ""
+  depends_on:
+    db:
+      condition: service_healthy
+    redis:
+      condition: service_healthy
+
+services:
+  # ============================================================================
+  # PostgreSQL + PostGIS Database
+  # ============================================================================
+  db:
+    image: postgis/postgis:16-3.4
+    container_name: hallbooking_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: hallbooking_db
+      POSTGRES_USER: hallbooking
+      POSTGRES_PASSWORD: hallbooking
+    ports:
+      # Host port is configurable in case a local PostgreSQL already uses 5432.
+      - "${DB_HOST_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hallbooking -d hallbooking_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ============================================================================
+  # Redis (Cache + Celery Broker + Result Backend)
+  # ============================================================================
+  redis:
+    image: redis:7-alpine
+    container_name: hallbooking_redis
+    restart: unless-stopped
+    ports:
+      - "${REDIS_HOST_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ============================================================================
+  # Django Backend (gunicorn). Generates + applies migrations on start.
+  # ============================================================================
+  backend:
+    <<: *backend-common
+    container_name: hallbooking_backend
+    ports:
+      - "${BACKEND_HOST_PORT:-8000}:8000"
+    environment:
+      <<: *backend-env
+      RUN_MIGRATIONS: "1"
+      # Migration files are not committed yet, so create them on start.
+      # Remove once migrations are committed to the repository.
+      AUTO_MAKEMIGRATIONS: "1"
+    volumes:
+      - media_data:/app/media
+      - static_data:/app/staticfiles
+
+  # ============================================================================
+  # Celery Worker (Async Task Processing)
+  # ============================================================================
+  celery_worker:
+    <<: *backend-common
+    container_name: hallbooking_celery_worker
+    command: >
+      celery -A config worker
+      --loglevel=info
+      --concurrency=2
+      --max-tasks-per-child=1000
+    # Wait for the backend (i.e. migrations) before consuming tasks.
+    depends_on:
+      backend:
+        condition: service_healthy
+    volumes:
+      - media_data:/app/media
+
+  # ============================================================================
+  # Celery Beat (Periodic Task Scheduler; needs django_celery_beat tables)
+  # ============================================================================
+  celery_beat:
+    <<: *backend-common
+    container_name: hallbooking_celery_beat
+    command: >
+      celery -A config beat
+      --loglevel=info
+      --scheduler=django_celery_beat.schedulers:DatabaseScheduler
+    depends_on:
+      backend:
+        condition: service_healthy
+
+  # ============================================================================
+  # Next.js Frontend (talks to the backend server-side via API_BASE_URL)
+  # ============================================================================
+  frontend:
+    build:
+      context: ../frontend
+    container_name: hallbooking_frontend
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_HOST_PORT:-3000}:3000"
+    environment:
+      API_BASE_URL: http://backend:8000
+      # Served over plain HTTP locally; Safari rejects Secure cookies on http.
+      AUTH_COOKIE_SECURE: "false"
+    depends_on:
+      backend:
+        condition: service_healthy
+
+# ==============================================================================
+# Persistent Volumes
+# ==============================================================================
+volumes:
+  postgres_data:
+  redis_data:
+  media_data:
+  static_data:

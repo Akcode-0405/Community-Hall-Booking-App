@@ -1,0 +1,40 @@
+# ==============================================================================
+# Test stack: PostGIS + a test-runner image with the backend source mounted.
+#
+#   docker compose -f docker/docker-compose.test.yml run --rm tests
+#   docker compose -f docker/docker-compose.test.yml run --rm tests pytest apps/tenants -x
+#   docker compose -f docker/docker-compose.test.yml down -v
+# ==============================================================================
+
+services:
+  test_db:
+    image: postgis/postgis:16-3.4
+    environment:
+      POSTGRES_DB: hallbooking_db
+      POSTGRES_USER: hallbooking
+      POSTGRES_PASSWORD: hallbooking
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hallbooking -d hallbooking_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  tests:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+      args:
+        REQUIREMENTS: test.txt
+    user: root
+    working_dir: /app
+    environment:
+      DATABASE_URL: postgis://hallbooking:hallbooking@test_db:5432/hallbooking_db
+      DJANGO_SETTINGS_MODULE: config.settings.test
+    volumes:
+      - ../backend:/app
+    depends_on:
+      test_db:
+        condition: service_healthy
+    command: ["pytest"]

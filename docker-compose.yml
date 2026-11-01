@@ -1,0 +1,8 @@
+# Run the whole stack from the repository root:
+#
+#   docker compose up --build
+#
+# Frontend http://localhost:3000 · API http://localhost:8000/api/docs/
+# The services are defined in docker/docker-compose.yml.
+include:
+  - docker/docker-compose.yml
